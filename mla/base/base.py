@@ -5,6 +5,7 @@ class BaseEstimator(object):
     X = None
     y = None
     y_required = True
+    fit_required = True
 
     def _setup_input(self, X, y=None):
         """Ensure inputs to an estimator are in the expected format.
@@ -43,7 +44,7 @@ class BaseEstimator(object):
                 y = np.array(y)
 
             if y.size == 0:
-                raise ValueError('Number of features must be > 0')
+                raise ValueError('Number of targets must be > 0')
 
         self.y = y
 
@@ -51,7 +52,10 @@ class BaseEstimator(object):
         self._setup_input(X, y)
 
     def predict(self, X=None):
-        if self.X is not None:
+        if not isinstance(X, np.ndarray):
+            X = np.array(X)
+
+        if self.X is not None or not self.fit_required:
             return self._predict(X)
         else:
             raise ValueError('You must call `fit` before `predict`')
